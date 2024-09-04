@@ -199,9 +199,7 @@ class StorageObject(
 
     def retrieve_object(self):
         # Ensure that the object is accessible locally under self.local_path()
-        cmd = sysrsync.get_rsync_command(
-            str(self.query_path), str(self.local_path()), options=["-av"]
-        )
+        cmd = ["cp", str(self.query_path), str(self.local_path())]
         self._run_cmd(cmd)
 
     def store_object(self):
@@ -218,13 +216,9 @@ class StorageObject(
         # We want to respect the permissions in the target folder, in particular the
         # setgid bit. Hence, we use --no-p to avoid preserving of permissions from the
         # source to the target.
-        cmd = sysrsync.get_rsync_command(
-            str(self.local_path()),
-            str(self.query_path),
+        cmd = ["cp", str(self.local_path()), str(self.query_path)]
             # ensure that permissions and ownership are inherited from destination,
             # e.g. setgid.
-            options=["-av", "--no-o", "--no-g", "--no-p"],
-        )
         self._run_cmd(cmd)
 
     def _run_cmd(self, cmd: list[str]):
